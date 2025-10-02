@@ -1,0 +1,18 @@
+from django.db import models
+from django.contrib.auth.models import AbstractUser
+
+# Create your models here.
+class MyCustomUser(AbstractUser):
+   roles=(
+      ('admin','Admin'),
+      ('staff','Staff')
+   )
+   email = models.EmailField(unique=True)
+   contact_number= models.CharField(max_length=13,blank=True,null=True)
+   role = models.CharField(max_length=50, choices=roles,default='staff')
+   address= models.TextField(blank=True, null=True)
+
+   def save(self,*args,**kwargs):
+      if self.is_superuser==True:
+         self.role="admin"
+      super().save(*args,**kwargs)
