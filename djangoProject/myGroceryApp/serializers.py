@@ -8,12 +8,10 @@ from django.contrib.auth import get_user_model
 User= get_user_model()
 
 class UserInfoSerializer(serializers.ModelSerializer):
-
    email = serializers.EmailField(
       required=True,
       validators=[UniqueValidator(queryset=User.objects.all())]  # 👈 email must be unique
    )
-
    class Meta:
       model = User
       # fields= '__all__' #for show all fields
@@ -86,5 +84,11 @@ class UserInfoSerializer(serializers.ModelSerializer):
 
       instance.save()
       return instance
+   
 
-      
+#product list serilizer
+
+class productStockSerializer(serializers.ModelSerializer):
+   class Meta:
+      model=productStockModel
+      fields='__all__'

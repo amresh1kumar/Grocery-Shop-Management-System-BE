@@ -8,9 +8,7 @@ from rest_framework.permissions import AllowAny, IsAuthenticated, IsAdminUser
 from django.db import IntegrityError
 
 
-
 # Create your views here.
-
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.exceptions import AuthenticationFailed
 
@@ -69,9 +67,7 @@ class UserInformationView(APIView):
 
 
 class UserRegisterView(APIView):
-
    permission_classes = [AllowAny]  
-
    def post(self,request):
       serializer=UserInfoSerializer(data=request.data)
       if serializer.is_valid():
@@ -127,4 +123,59 @@ class UserLoginView(APIView):
          return Response({"error": "Invalid credentials"}, status=status.HTTP_401_UNAUTHORIZED)
 
 
+#product list view 
 
+class productStockView(APIView):
+   # def get(self,request,id=None):
+   #    if id:
+   #       item=productStockModel.objects.get(pk=id)
+   #       serializer= productStockSerializer(item)
+   #       return Response(serializer.data)
+   #    else:
+   #       item= productStockModel.objects.all()
+   #       serializer = productStockSerializer(item,many=True)
+   #       return Response(serializer.data)
+
+   def get(self, request, id=None):
+      if id:
+            item = productStockModel.objects.get(pk=id)
+            serializer = productStockSerializer(item)
+            return Response(serializer.data)
+      else:
+            # Get query params
+            category = request.query_params.get('item_category')
+            name = request.query_params.get('item_name')
+
+            items = productStockModel.objects.all()
+
+            # Apply filters if query params exist
+            if category:
+               items = items.filter(item_category__icontains=category)
+            if name:
+               items = items.filter(item_name__icontains=name)
+
+            serializer = productStockSerializer(items, many=True)
+            return Response(serializer.data)
+      
+# Get all items      http://127.0.0.1:8000/productList/`                                    
+# Filter by category http://127.0.0.1:8000/productList/?item_category=Fruits              
+# Filter by name     http://127.0.0.1:8000/productList/?item_name=Rice  
+# Filter by both     http://127.0.0.1:8000/productList/?item_name=Apple&item_category=Fruits
+
+
+   def post(self,request):
+      serializer= productStockSerializer(data=request.data)
+      if serializer.is_valid():
+         serializer.save()
+         return Response(serializer.data)
+      
+   def put(self,request,id=None):
+      old_item=productStockModel.objects.get(pk=id)
+      serializer_data=productStockSerializer(old_item, data=request.data , partial=True)
+      if serializer_data.is_valid():
+         serializer_data.save()
+         return Response(serializer_data.data)
+      
+   def delete(self,request,id=None):
+      item= productStockModel.objects.get(pk=id)
+      item.delete()

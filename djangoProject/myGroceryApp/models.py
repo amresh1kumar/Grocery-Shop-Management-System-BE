@@ -16,3 +16,10 @@ class MyCustomUser(AbstractUser):
       if self.is_superuser==True:
          self.role="admin"
       super().save(*args,**kwargs)
+
+#product list model
+class productStockModel(models.Model):
+   item_name= models.CharField(max_length=50)
+   item_qty= models.CharField(max_length=50)
+   item_price= models.CharField(max_length=50)
+   item_category= models.CharField(max_length=50)

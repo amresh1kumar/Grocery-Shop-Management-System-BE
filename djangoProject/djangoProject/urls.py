@@ -23,5 +23,7 @@ urlpatterns = [
     path('user/',views.UserInformationView.as_view(), name='user-list'),
     path('user/<int:id>/',views.UserInformationView.as_view(),name='user-detail'),
     path('register/',views.UserRegisterView.as_view(),name='register'),
-    path('login/',views.UserLoginView.as_view(),name='register')
+    path('login/',views.UserLoginView.as_view(),name='register'),
+    path('productList/<int:id>/',views.productStockView.as_view(),name='product-list'),
+    path('productList/',views.productStockView.as_view(),name='product-list')
 ]
