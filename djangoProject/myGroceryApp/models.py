@@ -23,3 +23,7 @@ class productStockModel(models.Model):
    item_qty= models.CharField(max_length=50)
    item_price= models.CharField(max_length=50)
    item_category= models.CharField(max_length=50)
+
+class CustomerInformation(models.Model):
+   customer_name= models.CharField(max_length=50)
+   customer_contact_no= models.CharField(max_length=12,unique=True)

@@ -4,8 +4,9 @@ from .models import *
 from .serializers import *
 from rest_framework import status,permissions
 from django.contrib.auth import authenticate
+from rest_framework import status
+from django.shortcuts import get_object_or_404
 from rest_framework.permissions import AllowAny, IsAuthenticated, IsAdminUser
-from django.db import IntegrityError
 
 
 # Create your views here.
@@ -126,15 +127,7 @@ class UserLoginView(APIView):
 #product list view 
 
 class productStockView(APIView):
-   # def get(self,request,id=None):
-   #    if id:
-   #       item=productStockModel.objects.get(pk=id)
-   #       serializer= productStockSerializer(item)
-   #       return Response(serializer.data)
-   #    else:
-   #       item= productStockModel.objects.all()
-   #       serializer = productStockSerializer(item,many=True)
-   #       return Response(serializer.data)
+   # permission_classes = [permissions.IsAuthenticated]  # ✅ Protected
 
    def get(self, request, id=None):
       if id:
@@ -171,11 +164,13 @@ class productStockView(APIView):
       
    def put(self,request,id=None):
       old_item=productStockModel.objects.get(pk=id)
-      serializer_data=productStockSerializer(old_item, data=request.data , partial=True)
-      if serializer_data.is_valid():
-         serializer_data.save()
-         return Response(serializer_data.data)
+      serializer =productStockSerializer(old_item, data=request.data , partial=True)
+      if serializer .is_valid():
+         serializer .save()
+         return Response(serializer.data)
+      return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
       
    def delete(self,request,id=None):
       item= productStockModel.objects.get(pk=id)
       item.delete()
+      return Response({"message": "Item deleted successfully!"})
