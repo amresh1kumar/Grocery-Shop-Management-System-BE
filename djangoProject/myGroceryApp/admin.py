@@ -23,3 +23,4 @@ class CustomUserAdmin(UserAdmin):
 admin.site.register(MyCustomUser, CustomUserAdmin)
 
 admin.site.register(productStockModel)
+admin.site.register(CustomerInformation)

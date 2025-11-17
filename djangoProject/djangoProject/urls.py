@@ -25,5 +25,7 @@ urlpatterns = [
     path('register/',views.UserRegisterView.as_view(),name='register'),
     path('login/',views.UserLoginView.as_view(),name='register'),
     path('productList/<int:id>/',views.productStockView.as_view(),name='product-list'),
-    path('productList/',views.productStockView.as_view(),name='product-list')
+    path('productList/',views.productStockView.as_view(),name='product-list'),
+    path("customers/", views.CustomerInformationView.as_view()),
+    path("customers/<int:pk>/", views.CustomerInformationView.as_view()),
 ]

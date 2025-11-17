@@ -92,3 +92,9 @@ class productStockSerializer(serializers.ModelSerializer):
    class Meta:
       model=productStockModel
       fields='__all__'
+
+
+class CustomerInformationSerializer(serializers.ModelSerializer):
+   class Meta:
+      model = CustomerInformation
+      fields = "__all__"      

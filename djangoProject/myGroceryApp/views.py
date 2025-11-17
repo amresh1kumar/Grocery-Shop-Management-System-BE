@@ -130,23 +130,21 @@ class productStockView(APIView):
    # permission_classes = [permissions.IsAuthenticated]  # ✅ Protected
 
    def get(self, request, id=None):
-      if id:
-            item = productStockModel.objects.get(pk=id)
+      if id:  
+            # item = productStockModel.objects.get(pk=id) # Agar id exist nahi karti to ye DoesNotExist exception dega.
+            
+            item = get_object_or_404(productStockModel, pk=id) # Ye bhi same kaam karta hai lekin agar id exist nahi karti to ye 404 response dega.
+
             serializer = productStockSerializer(item)
             return Response(serializer.data)
       else:
             # Get query params
-            category = request.query_params.get('item_category')
-            name = request.query_params.get('item_name')
-
+            category = request.GET.get("item_category", "").strip() # strip to remove extra spaces
             items = productStockModel.objects.all()
 
             # Apply filters if query params exist
             if category:
-               items = items.filter(item_category__icontains=category)
-            if name:
-               items = items.filter(item_name__icontains=name)
-
+               items = items.filter(item_category__icontains=category) #icontains for case insensitive matching chahe uppercase/lowercase ho, sab match karega.
             serializer = productStockSerializer(items, many=True)
             return Response(serializer.data)
       
@@ -162,15 +160,109 @@ class productStockView(APIView):
          serializer.save()
          return Response(serializer.data)
       
-   def put(self,request,id=None):
+   # def put(self,request,id=None):
       old_item=productStockModel.objects.get(pk=id)
+      
+
+      new_qty = request.data.get("item_qty")
+
+      if new_qty is not None:
+         try:
+            new_qty = int(new_qty)
+         except:
+            return Response({"error": "Quantity must be a number"}, status=400)
+
+         if new_qty < 0:
+            return Response(
+               {"error": "Not enough stock"},
+               status=400
+            )
+
       serializer =productStockSerializer(old_item, data=request.data , partial=True)
       if serializer .is_valid():
          serializer .save()
          return Response(serializer.data)
       return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
       
+   def put(self, request, id=None):
+      old_item = productStockModel.objects.get(pk=id)
+
+      reduce_qty = request.data.get("reduce_qty")
+
+      if reduce_qty is not None:
+         try:
+               reduce_qty = int(reduce_qty)
+         except:
+               return Response({"error": "Quantity must be a number"}, status=400)
+
+         # Convert old stock to int
+         try:
+               old_qty = int(old_item.item_qty)
+         except:
+               return Response({"error": "Stored stock is not a valid number"}, status=400)
+
+         # Calculate new stock
+         new_qty = old_qty - reduce_qty
+
+         if new_qty < 0:
+               return Response({"error": "Not enough stock"}, status=400)
+
+         # Save updated stock
+         old_item.item_qty = new_qty
+         old_item.save()
+
+         return Response({
+               "message": "Stock updated successfully",
+               "new_stock": new_qty
+         })
+
+      serializer = productStockSerializer(old_item, data=request.data, partial=True)
+      if serializer.is_valid():
+         serializer.save()
+         return Response(serializer.data)
+
+      return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
    def delete(self,request,id=None):
       item= productStockModel.objects.get(pk=id)
       item.delete()
       return Response({"message": "Item deleted successfully!"})
+   
+
+
+
+class CustomerInformationView(APIView):
+
+    # 🔹 GET All + GET by ID
+    def get(self, request, pk=None):
+        if pk:
+            customer = get_object_or_404(CustomerInformation, pk=pk)
+            serializer = CustomerInformationSerializer(customer)
+            return Response(serializer.data)
+
+        customers = CustomerInformation.objects.all()
+        serializer = CustomerInformationSerializer(customers, many=True)
+        return Response(serializer.data)
+
+    # 🔹 POST - Create
+    def post(self, request):
+        serializer = CustomerInformationSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    # 🔹 PUT - Update
+    def put(self, request, pk):
+        customer = get_object_or_404(CustomerInformation, pk=pk)
+        serializer = CustomerInformationSerializer(customer, data=request.data, partial=False)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    # 🔹 DELETE
+    def delete(self, request, pk):
+        customer = get_object_or_404(CustomerInformation, pk=pk)
+        customer.delete()
+        return Response({"message": "Customer deleted successfully"}, status=status.HTTP_204_NO_CONTENT)
