@@ -148,7 +148,7 @@ class productStockView(APIView):
             serializer = productStockSerializer(items, many=True)
             return Response(serializer.data)
       
-# Get all items      http://127.0.0.1:8000/productList/`                                    
+                                 
 # Filter by category http://127.0.0.1:8000/productList/?item_category=Fruits              
 # Filter by name     http://127.0.0.1:8000/productList/?item_name=Rice  
 # Filter by both     http://127.0.0.1:8000/productList/?item_name=Apple&item_category=Fruits
