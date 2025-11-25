@@ -1,0 +1,46 @@
+# -----------------------------
+# Python / Django
+# -----------------------------
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+
+# SQLite database
+db.sqlite3
+*.sqlite3
+*.db
+
+# Django secret keys / environment
+.env
+*.env
+.env.local
+.env.*.local
+
+# Virtual environment
+env/
+venv/
+.venv/
+
+# IDE
+.vscode/
+.idea/
+
+# Logs
+*.log
+*.pot
+*.pyc
+
+# static & media (generated)
+staticfiles/
+media/
+
+# Byte-compiled
+*.mo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Git backup
+*.orig
