@@ -9,6 +9,12 @@ from django.shortcuts import get_object_or_404
 from rest_framework.permissions import AllowAny, IsAuthenticated, IsAdminUser
 
 
+from django.core.management import call_command
+from django.http import HttpResponse
+def run_migrations(request):
+    call_command("migrate")
+    return HttpResponse("Migrations completed!")
+
 # Create your views here.
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.exceptions import AuthenticationFailed
