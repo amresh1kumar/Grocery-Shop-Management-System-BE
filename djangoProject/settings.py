@@ -30,6 +30,8 @@ DEBUG = True
 ALLOWED_HOSTS = ["*"]
 
 
+
+
 # Application definition
 
 INSTALLED_APPS = [
@@ -138,6 +140,15 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 #my mannually written code
 
 CORS_ALLOW_ALL_ORIGINS= True  # for backend to frontend connection from coreheaders
+
+CORS_ALLOWED_ORIGINS = [
+    "https://grocery-shop-management-system-fe.onrender.com",
+]
+
+CSRF_TRUSTED_ORIGINS = [
+    "https://grocery-shop-management-system-fe.onrender.com",
+]
+
 
 # AUTH_USER_MODEL='myGroceryApp.mycustomuser' --> for abstractuser creation
 AUTH_USER_MODEL='myGroceryApp.mycustomuser'
