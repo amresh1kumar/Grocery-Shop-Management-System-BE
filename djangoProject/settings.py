@@ -26,10 +26,7 @@ SECRET_KEY = 'django-insecure-x!v88mmg#owo9x$u8z&*bbz)oz%*&$o)_-le(-20+)j6l9s^x2
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-# ALLOWED_HOSTS = []
-ALLOWED_HOSTS = ["*"]
-
-
+ALLOWED_HOSTS = []
 
 
 # Application definition
@@ -140,15 +137,6 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 #my mannually written code
 
 CORS_ALLOW_ALL_ORIGINS= True  # for backend to frontend connection from coreheaders
-
-CORS_ALLOWED_ORIGINS = [
-    "https://grocery-shop-management-system-fe.onrender.com",
-]
-
-CSRF_TRUSTED_ORIGINS = [
-    "https://grocery-shop-management-system-fe.onrender.com",
-]
-
 
 # AUTH_USER_MODEL='myGroceryApp.mycustomuser' --> for abstractuser creation
 AUTH_USER_MODEL='myGroceryApp.mycustomuser'
