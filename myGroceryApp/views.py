@@ -21,7 +21,7 @@ def get_tokens_for_user(user):
    }
 
 class UserInformationView(APIView):
-   permission_classes = [permissions.IsAuthenticated]  # ✅ Protected
+   # permission_classes = [permissions.IsAuthenticated]  #Protected
    def get(self,request,id=None):
       if id:
          try:
@@ -65,7 +65,7 @@ class UserInformationView(APIView):
 
 
 class UserRegisterView(APIView):
-   permission_classes = [AllowAny]  
+   # permission_classes = [AllowAny]  
    def post(self,request):
       serializer=UserInfoSerializer(data=request.data)
       if serializer.is_valid():
@@ -123,115 +123,269 @@ class UserLoginView(APIView):
 
 #product list view 
 
-class productStockView(APIView):
-   permission_classes = [permissions.IsAuthenticated]  # ✅ Protected
-
-   def get(self, request, id=None):
-      if id:  
-            # item = productStockModel.objects.get(pk=id) # Agar id exist nahi karti to ye DoesNotExist exception dega.
+# class productStockView(APIView):
+#    # permission_classes = [permissions.IsAuthenticated]  # ✅ Protected
+#    def get(self, request, id=None):
+#       if id:  
+#             # item = productStockModel.objects.get(pk=id) # Agar id exist nahi karti to ye DoesNotExist exception dega.
             
-            item = get_object_or_404(productStockModel, pk=id) # Ye bhi same kaam karta hai lekin agar id exist nahi karti to ye 404 response dega.
+#             item = get_object_or_404(productStockModel, pk=id) # Ye bhi same kaam karta hai lekin agar id exist nahi karti to ye 404 response dega.
 
-            serializer = productStockSerializer(item)
-            return Response(serializer.data)
-      else:
-            # Get query params
-            category = request.GET.get("item_category", "").strip() # strip to remove extra spaces
-            items = productStockModel.objects.all()
+#             serializer = productStockSerializer(item)
+#             return Response(serializer.data)
+#       else:
+#             # Get query params
+#             category = request.GET.get("item_category", "").strip() # strip to remove extra spaces
+#             items = productStockModel.objects.all()
 
-            # Apply filters if query params exist
-            if category:
-               items = items.filter(item_category__icontains=category) #icontains for case insensitive matching chahe uppercase/lowercase ho, sab match karega.
-            serializer = productStockSerializer(items, many=True)
-            return Response(serializer.data)
+#             # Apply filters if query params exist
+#             if category:
+#                items = items.filter(item_category__icontains=category) #icontains for case insensitive matching chahe uppercase/lowercase ho, sab match karega.
+#             serializer = productStockSerializer(items, many=True)
+#             return Response(serializer.data)
       
                                  
-# Filter by category http://127.0.0.1:8000/productList/?item_category=Fruits              
-# Filter by name     http://127.0.0.1:8000/productList/?item_name=Rice  
-# Filter by both     http://127.0.0.1:8000/productList/?item_name=Apple&item_category=Fruits
+# # Filter by category http://127.0.0.1:8000/productList/?item_category=Fruits              
+# # Filter by name     http://127.0.0.1:8000/productList/?item_name=Rice  
+# # Filter by both     http://127.0.0.1:8000/productList/?item_name=Apple&item_category=Fruits
 
 
-   def post(self,request):
-      serializer= productStockSerializer(data=request.data)
-      if serializer.is_valid():
-         serializer.save()
-         return Response(serializer.data)
+#    def post(self,request):
+#       serializer= productStockSerializer(data=request.data)
+#       if serializer.is_valid():
+#          serializer.save()
+#          return Response(serializer.data)
       
-   # def put(self,request,id=None):
-      old_item=productStockModel.objects.get(pk=id)
+#    # def put(self,request,id=None):
+#       old_item=productStockModel.objects.get(pk=id)
       
 
-      new_qty = request.data.get("item_qty")
+#       new_qty = request.data.get("item_qty")
 
-      if new_qty is not None:
-         try:
-            new_qty = int(new_qty)
-         except:
-            return Response({"error": "Quantity must be a number"}, status=400)
+#       if new_qty is not None:
+#          try:
+#             new_qty = int(new_qty)
+#          except:
+#             return Response({"error": "Quantity must be a number"}, status=400)
 
-         if new_qty < 0:
-            return Response(
-               {"error": "Not enough stock"},
-               status=400
-            )
+#          if new_qty < 0:
+#             return Response(
+#                {"error": "Not enough stock"},
+#                status=400
+#             )
 
-      serializer =productStockSerializer(old_item, data=request.data , partial=True)
-      if serializer .is_valid():
-         serializer .save()
-         return Response(serializer.data)
-      return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+#       serializer =productStockSerializer(old_item, data=request.data , partial=True)
+#       if serializer .is_valid():
+#          serializer .save()
+#          return Response(serializer.data)
+#       return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
       
-   def put(self, request, id=None):
-      old_item = productStockModel.objects.get(pk=id)
+#    def put(self, request, id=None):
+#       old_item = productStockModel.objects.get(pk=id)
 
-      reduce_qty = request.data.get("reduce_qty")
+#       reduce_qty = request.data.get("reduce_qty")
 
-      if reduce_qty is not None:
-         try:
-               reduce_qty = int(reduce_qty)
-         except:
-               return Response({"error": "Quantity must be a number"}, status=400)
+#       if reduce_qty is not None:
+#          try:
+#                reduce_qty = int(reduce_qty)
+#          except:
+#                return Response({"error": "Quantity must be a number"}, status=400)
 
-         # Convert old stock to int
-         try:
-               old_qty = int(old_item.item_qty)
-         except:
-               return Response({"error": "Stored stock is not a valid number"}, status=400)
+#          # Convert old stock to int
+#          try:
+#                old_qty = int(old_item.item_qty)
+#          except:
+#                return Response({"error": "Stored stock is not a valid number"}, status=400)
 
-         # Calculate new stock
-         new_qty = old_qty - reduce_qty
+#          # Calculate new stock
+#          new_qty = old_qty - reduce_qty
 
-         if new_qty < 0:
-               return Response({"error": "Not enough stock"}, status=400)
+#          if new_qty < 0:
+#                return Response({"error": "Not enough stock"}, status=400)
 
-         # Save updated stock
-         old_item.item_qty = new_qty
-         old_item.save()
+#          # Save updated stock
+#          old_item.item_qty = new_qty
+#          old_item.save()
 
-         return Response({
-               "message": "Stock updated successfully",
-               "new_stock": new_qty
-         })
+#          return Response({
+#                "message": "Stock updated successfully",
+#                "new_stock": new_qty
+#          })
 
-      serializer = productStockSerializer(old_item, data=request.data, partial=True)
-      if serializer.is_valid():
-         serializer.save()
-         return Response(serializer.data)
+#       serializer = productStockSerializer(old_item, data=request.data, partial=True)
+#       if serializer.is_valid():
+#          serializer.save()
+#          return Response(serializer.data)
 
-      return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+#       return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-   def delete(self,request,id=None):
-      item= productStockModel.objects.get(pk=id)
-      item.delete()
-      return Response({"message": "Item deleted successfully!"})
+#    def delete(self,request,id=None):
+#       item= productStockModel.objects.get(pk=id)
+#       item.delete()
+#       return Response({"message": "Item deleted successfully!"})
+
+
+
+
+
+class productStockView(APIView):
+
+    def get(self, request, id=None):
+        if id:
+            item = get_object_or_404(productStockModel, pk=id)
+            serializer = productStockSerializer(item)
+            return Response(serializer.data)
+
+        # list + filter
+        category = request.GET.get("item_category", "").strip()
+        items = productStockModel.objects.all()
+
+        if category:
+            items = items.filter(item_category__icontains=category)
+
+        serializer = productStockSerializer(items, many=True)
+        return Response(serializer.data)
+
+    def post(self, request):
+        serializer = productStockSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def put(self, request, id=None):
+        item = get_object_or_404(productStockModel, pk=id)
+
+        reduce_qty = request.data.get("reduce_qty")
+        increase_qty = request.data.get("increase_qty")
+
+        current_qty = int(item.item_qty)
+
+        # 🔻 Reduce stock
+        if reduce_qty is not None:
+            reduce_qty = int(reduce_qty)
+            new_qty = current_qty - reduce_qty
+
+            if new_qty < 0:
+                return Response(
+                    {"error": "Not enough stock"},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+
+            item.item_qty = new_qty
+            item.save()
+
+            return Response({
+                "message": "Stock reduced successfully",
+                "new_stock": new_qty
+            })
+
+        # 🔺 Increase stock (rollback)
+        if increase_qty is not None:
+            increase_qty = int(increase_qty)
+            item.item_qty = current_qty + increase_qty
+            item.save()
+
+            return Response({
+                "message": "Stock restored successfully",
+                "new_stock": item.item_qty
+            })
+
+        # fallback update
+        serializer = productStockSerializer(item, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, id=None):
+        item = get_object_or_404(productStockModel, pk=id)
+        item.delete()
+        return Response(
+            {"message": "Item deleted successfully"},
+            status=status.HTTP_200_OK
+        )
+
+
+# from django.db.models import Sum, Count, F
+# from rest_framework.views import APIView
+# from rest_framework.response import Response
+# from rest_framework import permissions
+
+# class StockDashboardSummary(APIView):
+#    permission_classes = [permissions.IsAuthenticated]
+
+#    def get(self, request):
+#       # Total quantity
+#       total_items = productStockModel.objects.aggregate(
+#             total=Sum("item_qty")
+#       )["total"] or 0
+
+#       # Total stock value = qty * price
+#       total_value = productStockModel.objects.aggregate(
+#             total=Sum(F("item_qty") * F("item_price"))
+#       )["total"] or 0
+
+#       # Total unique categories
+#       total_categories = productStockModel.objects.values(
+#             "item_category"
+#       ).distinct().count()
+
+#       # Full item list
+#       items = productStockModel.objects.all()
+#       serializer = productStockSerializer(items, many=True)
+
+#       return Response({
+#             "total_items": total_items,
+#             "total_value": total_value,
+#             "total_categories": total_categories,
+#             "items": serializer.data
+#       })
+
+from django.db.models import Sum, Count, F, FloatField
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import permissions
+
+class StockDashboardSummary(APIView):
+   # permission_classes = [permissions.IsAuthenticated]
    
 
+   def get(self, request):
+      # Total Items (quantity sum)
+      total_items = productStockModel.objects.aggregate(
+            total=Sum(F("item_qty"), output_field=FloatField())
+      )["total"] or 0
+
+      # Total Stock Value (qty * price)
+      total_value = productStockModel.objects.aggregate(
+            total=Sum(
+                F("item_qty") * F("item_price"),
+               output_field=FloatField()
+            )
+      )["total"] or 0
+
+      # Total Categories
+      total_categories = productStockModel.objects.values(
+            "item_category"
+      ).distinct().count()
+
+      # Full Item List
+      items = productStockModel.objects.all()
+      serializer = productStockSerializer(items, many=True)
+
+      return Response({
+            "total_items": total_items,
+            "total_value": total_value,
+            "total_categories": total_categories,
+            "items": serializer.data,
+      })
 
 
 class CustomerInformationView(APIView):
-   permission_classes = [permissions.IsAuthenticated]  # ✅ Protected
-
-   # 🔹 GET All + GET by ID
+   # permission_classes = [permissions.IsAuthenticated]
    def get(self, request, pk=None):
       if pk:
             customer = get_object_or_404(CustomerInformation, pk=pk)

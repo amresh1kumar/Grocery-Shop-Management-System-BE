@@ -28,4 +28,6 @@ urlpatterns = [
     path('productList/',views.productStockView.as_view(),name='product-list'),
     path("customers/", views.CustomerInformationView.as_view()),
     path("customers/<int:pk>/", views.CustomerInformationView.as_view()),
+    path("productList/summary/", views.StockDashboardSummary.as_view()),
+
 ]
