@@ -229,84 +229,83 @@ class UserLoginView(APIView):
 
 
 class productStockView(APIView):
-
-    def get(self, request, id=None):
-        if id:
+   def get(self, request, id=None):
+      if id:
             item = get_object_or_404(productStockModel, pk=id)
             serializer = productStockSerializer(item)
             return Response(serializer.data)
 
-        # list + filter
-        category = request.GET.get("item_category", "").strip()
-        items = productStockModel.objects.all()
+      # list + filter
+      category = request.GET.get("item_category", "").strip()
+      items = productStockModel.objects.all()
 
-        if category:
-            items = items.filter(item_category__icontains=category)
+      if category:
+         items = items.filter(item_category__icontains=category)
 
-        serializer = productStockSerializer(items, many=True)
-        return Response(serializer.data)
+      serializer = productStockSerializer(items, many=True)
+      return Response(serializer.data)
 
-    def post(self, request):
-        serializer = productStockSerializer(data=request.data)
-        if serializer.is_valid():
+   def post(self, request):
+      serializer = productStockSerializer(data=request.data)
+      if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
 
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+      return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    def put(self, request, id=None):
-        item = get_object_or_404(productStockModel, pk=id)
+   def put(self, request, id=None):
+      item = get_object_or_404(productStockModel, pk=id)
 
-        reduce_qty = request.data.get("reduce_qty")
-        increase_qty = request.data.get("increase_qty")
+      reduce_qty = request.data.get("reduce_qty")
+      increase_qty = request.data.get("increase_qty")
 
-        current_qty = int(item.item_qty)
+      current_qty = int(item.item_qty)
 
-        # 🔻 Reduce stock
-        if reduce_qty is not None:
+      # 🔻 Reduce stock
+      if reduce_qty is not None:
             reduce_qty = int(reduce_qty)
             new_qty = current_qty - reduce_qty
 
             if new_qty < 0:
-                return Response(
-                    {"error": "Not enough stock"},
-                    status=status.HTTP_400_BAD_REQUEST
-                )
+               return Response(
+                  {"error": "Not enough stock"},
+                  status=status.HTTP_400_BAD_REQUEST
+               )
 
             item.item_qty = new_qty
             item.save()
 
             return Response({
-                "message": "Stock reduced successfully",
-                "new_stock": new_qty
+               "message": "Stock reduced successfully",
+               "new_stock": new_qty
             })
 
-        # 🔺 Increase stock (rollback)
-        if increase_qty is not None:
+      # 🔺 Increase stock (rollback)
+      if increase_qty is not None:
             increase_qty = int(increase_qty)
             item.item_qty = current_qty + increase_qty
             item.save()
 
             return Response({
-                "message": "Stock restored successfully",
-                "new_stock": item.item_qty
+               "message": "Stock restored successfully",
+               "new_stock": item.item_qty
             })
 
-        # fallback update
-        serializer = productStockSerializer(item, data=request.data, partial=True)
-        if serializer.is_valid():
+      # fallback update
+      serializer = productStockSerializer(item, data=request.data, partial=True)
+      if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
 
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+      return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    def delete(self, request, id=None):
-        item = get_object_or_404(productStockModel, pk=id)
-        item.delete()
-        return Response(
+   def delete(self, request, id=None):
+      item = get_object_or_404(productStockModel, pk=id)
+      item.delete()
+      return Response(
             {"message": "Item deleted successfully"},
             status=status.HTTP_200_OK
-        )
+      )
 
 
 # from django.db.models import Sum, Count, F

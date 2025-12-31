@@ -26,7 +26,11 @@ SECRET_KEY = 'django-insecure-x!v88mmg#owo9x$u8z&*bbz)oz%*&$o)_-le(-20+)j6l9s^x2
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    # 'localhost',
+    # '127.0.0.1',
+    # '10.126.234.116',   # 👈 apna LAN IP yahan daalein
+]
 
 
 # Application definition
@@ -52,8 +56,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    "corsheaders.middleware.CorsMiddleware", #from coreheader
-    "django.middleware.common.CommonMiddleware", #from coreheader
+    "corsheaders.middleware.CorsMiddleware",  # from coreheader
+    "django.middleware.common.CommonMiddleware",  # from coreheader
 ]
 
 ROOT_URLCONF = 'djangoProject.urls'
@@ -133,17 +137,16 @@ STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
+# my mannually written code
 
-#my mannually written code
-
-CORS_ALLOW_ALL_ORIGINS= True  # for backend to frontend connection from coreheaders
+CORS_ALLOW_ALL_ORIGINS = True  # for backend to frontend connection from coreheaders
 
 # AUTH_USER_MODEL='myGroceryApp.mycustomuser' --> for abstractuser creation
-AUTH_USER_MODEL='myGroceryApp.mycustomuser'
+AUTH_USER_MODEL = 'myGroceryApp.mycustomuser'
 
 
-#add when simplejwt token install 
-#start
+# add when simplejwt token install
+# start
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
@@ -152,6 +155,6 @@ REST_FRAMEWORK = {
 
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(days=1),
-    "REFRESH_TOKEN_LIFETIME": timedelta(days=10),   
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=10),
 }
-#end 
+# end
